@@ -97,12 +97,19 @@
             return;
         }
 
-        document.getElementById("result").innerHTML =
-            "<span style='color:green;'>登録OK！</span>";
+const profile = await liff.getProfile();
+const userId = profile.userId;
+
+document.getElementById("result").innerHTML = `
+    <span style='color:green;'>認証OK！</span><br><br>
+    あなたの認証ID：<b>${userId}</b><br><br>
+    ※このIDは管理者が認証確認に使用します。
+`;
     }
 
     main();
 </script>
 
 </body>
+
 </html>
