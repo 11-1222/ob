@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>OB会 登録フォーム</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f7f7f7; }
+        .box {
+            background: white; padding: 20px; border-radius: 8px;
+            max-width: 500px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, select {
+            width: 100%; padding: 10px; margin: 10px 0; font-size: 16px;
+        }
+        button {
+            background: #06C755; color: white; padding: 12px 20px;
+            border: none; border-radius: 6px; font-size: 16px; cursor: pointer;
+        }
+        #result { margin-top: 20px; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>OB会 登録フォーム</h2>
+    <p id="userInfo">LINEログイン中...</p>
+
+    <label>入学年度（下2桁）</label>
+    <select id="year">
+        <option value="">選択してください</option>
+        <option value="06">06</option><option value="07">07</option>
+        <option value="08">08</option><option value="09">09</option>
+        <option value="10">10</option><option value="11">11</option>
+        <option value="12">12</option><option value="13">13</option>
+        <option value="14">14</option><option value="15">15</option>
+        <option value="16">16</option><option value="17">17</option>
+        <option value="18">18</option><option value="19">19</option>
+        <option value="20">20</option><option value="21">21</option>
+        <option value="22">22</option><option value="23">23</option>
+        <option value="24">24</option><option value="25">25</option>
+    </select>
+
+    <label>学科</label>
+    <select id="dept">
+        <option value="">選択してください</option>
+        <option value="A">海事システム工学科</option>
+        <option value="B">海洋電子機械工学科</option>
+        <option value="C">流通情報工学科</option>
+    </select>
+
+    <label>学籍番号</label>
+    <input type="text" id="studentId" placeholder="例：15211234">
+
+    <button onclick="submitForm()">登録する</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    const LIFF_ID = "2008785516-54LSovmr";
+
+    async function main() {
+        await liff.init({ liffId: LIFF_ID });
+
+        if (!liff.isLoggedIn()) {
+            liff.login();
+            return;
+        }
+
+        const profile = await liff.getProfile();
+        document.getElementById("userInfo").innerHTML =
+            `${profile.displayName} さんとしてログイン中`;
+    }
+
+    function submitForm() {
+        const year = document.getElementById("year").value;  // 06〜25
+        const dept = document.getElementById("dept").value;  // A/B/C
+        const studentId = document.getElementById("studentId").value;
+
+        if (!year || !dept) {
+            document.getElementById("result").innerHTML =
+                "<span style='color:red;'>入学年度と学科を選択してください。</span>";
+            return;
+        }
+
+        // 学科 → 数字変換
+        const deptMap = { "A": "1", "B": "2", "C": "3" };
+        const deptNum = deptMap[dept];
+
+        // 正しい形式：YY + "2" + deptNum + 3桁
+        const regex = new RegExp("^" + year + "2" + deptNum + "[0-9]{3}$");
+
+        if (!regex.test(studentId)) {
+            document.getElementById("result").innerHTML =
+                "<span style='color:red;'>学籍番号が指定の形式ではありません。</span>";
+            return;
+        }
+
+        document.getElementById("result").innerHTML =
+            "<span style='color:green;'>登録OK！</span>";
+    }
+
+    main();
+</script>
+
+</body>
+</html>
